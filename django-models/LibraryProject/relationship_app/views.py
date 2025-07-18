@@ -1,16 +1,16 @@
-from django.shortcuts import render
-from django.views.generic.detail import DetailView
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import AuthenticationForm
-from .forms import RegisterForm
 from django.contrib import messages
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.decorators import login_required
+from .forms import RegisterForm
 from .models import Book
 from .models import Library
 
 # Create your views here.
 
 # Function-based view: List all books
+@login_required
 def list_books(request):
     books = Book.objects.all()
     return render(request, 'relationship_app/list_books.html', {'books': books})
@@ -27,7 +27,7 @@ class LibraryDetailView(DetailView):
 
 def register_view(request):
     if request.method == 'POST':
-        form = RegisterForm(request.POST)
+        form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
