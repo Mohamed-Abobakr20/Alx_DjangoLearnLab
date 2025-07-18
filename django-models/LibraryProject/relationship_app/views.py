@@ -3,7 +3,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.decorators import login_required
-from .forms import RegisterForm
 from .models import Book
 from .models import Library
 
@@ -23,8 +22,6 @@ class LibraryDetailView(DetailView):
     context_object_name = 'library'
 
 
-
-
 def register_view(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -32,10 +29,13 @@ def register_view(request):
             user = form.save()
             login(request, user)
             messages.success(request, "Registration successful.")
-            return redirect('books')  # replace with your desired landing page
+            return redirect('books')  # change 'home' if needed
+        else:
+            messages.error(request, "Registration failed. Please check the form.")
     else:
-        form = RegisterForm()
+        form = UserCreationForm()
     return render(request, 'relationship_app/register.html', {'form': form})
+
 
 def login_view(request):
     if request.method == 'POST':
@@ -44,12 +44,15 @@ def login_view(request):
             user = form.get_user()
             login(request, user)
             messages.success(request, "Login successful.")
-            return redirect('books')  # replace with your landing page
+            return redirect('books')
+        else:
+            messages.error(request, "Invalid credentials.")
     else:
         form = AuthenticationForm()
     return render(request, 'relationship_app/login.html', {'form': form})
 
+
 def logout_view(request):
     logout(request)
-    messages.success(request, "Logged out successfully.")
+    messages.success(request, "You have been logged out.")
     return render(request, 'relationship_app/logout.html')
