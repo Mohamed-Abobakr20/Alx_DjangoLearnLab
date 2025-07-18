@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Book
 from .models import Library
 from django.views.generic import DetailView
-
+from django.contrib.auth.decorators import user_passes_test
 
 # Create your views here.
 
@@ -60,3 +60,21 @@ def logout_view(request):
     logout(request)
     messages.success(request, "You have been logged out.")
     return render(request, 'relationship_app/logout.html')
+
+
+def role_required(role):
+    def check(user):
+        return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == role
+    return user_passes_test(check)
+
+@role_required('Admin')
+def admin_view(request):
+    return render(request, 'relationship_app/admin_view.html')
+
+@role_required('Librarian')
+def librarian_view(request):
+    return render(request, 'relationship_app/librarian_view.html')
+
+@role_required('Member')
+def member_view(request):
+    return render(request, 'relationship_app/member_view.html')
