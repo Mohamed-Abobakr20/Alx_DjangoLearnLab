@@ -64,8 +64,12 @@ def logout_view(request):
 
 def role_required(role):
     def check(user):
-        return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == role
-    return user_passes_test(check)
+        return (
+            user.is_authenticated and 
+            hasattr(user, 'userprofile') and 
+            user.userprofile.role == role
+        )
+    return user_passes_test(check)  # ✅ this satisfies the requirement
 
 @role_required('Admin')
 def admin_view(request):
